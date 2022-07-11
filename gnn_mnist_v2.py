@@ -147,7 +147,8 @@ def main():
                         help='how many batches to wait before logging training status')
 
     args = parser.parse_args()
-    use_cuda = True
+    # use_cuda = True
+    use_cuda = False
 
     torch.manual_seed(args.seed)
 

@@ -1,7 +1,12 @@
-matplotlib
 numpy
 pandas
+matplotlib
+
 torch
+torchvision
+
+scipy
 igraph
+networkx
 
 # venv - pip install -r requrements.txt
