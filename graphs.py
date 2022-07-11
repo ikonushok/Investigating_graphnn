@@ -28,6 +28,8 @@ graph.add_edge(2, 4)
 
 # Plotting graph
 nx.draw(graph,
+        node_size=1000,
+        node_color='lightblue',
         with_labels=True)
 plt.show()
 
@@ -54,6 +56,7 @@ pos = nx.spring_layout(graph)
 nx.draw(graph,
         pos,
         node_size=1000,
+        node_color='lightblue',
         with_labels=True)
 labels = {edge_attribute: graph.edges[edge_attribute]['distance'] for edge_attribute in graph.edges}
 nx.draw_networkx_edge_labels(graph,
@@ -89,6 +92,7 @@ pos = nx.spring_layout(graph, k=1)
 nx.draw(graph,
         pos,
         node_size=1000,
+        node_color='lightblue',
         with_labels=True)
 labels = {edge_attribute: graph.edges[edge_attribute]['distance'] for edge_attribute in graph.edges}
 nx.draw_networkx_edge_labels(graph,
@@ -153,6 +157,7 @@ pos = nx.spring_layout(graph)
 nx.draw(graph,
         pos,
         node_size=1000,
+        node_color='lightblue',
         with_labels=True)
 labels = {edge_attribute: graph.edges[edge_attribute]['edge'] for edge_attribute in graph.edges}
 nx.draw_networkx_edge_labels(graph,
