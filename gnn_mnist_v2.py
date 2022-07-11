@@ -11,18 +11,18 @@ import numpy as np
 from scipy.spatial.distance import cdist
 
 
-class BorisNet(nn.Module):
+class Net(nn.Module):
     def __init__(self):
-        super(BorisNet, self).__init__()
+        super(Net, self).__init__()
         self.fc = nn.Linear(784, 10, bias=False)
 
     def forward(self, x):
         return self.fc(x.view(x.size(0), -1))
 
 
-class BorisConvNet(nn.Module):
+class ConvNet(nn.Module):
     def __init__(self):
-        super(BorisConvNet, self).__init__()
+        super(ConvNet, self).__init__()
         self.conv = nn.Conv2d(1, 10, 28, stride=1, padding=14)
         self.fc = nn.Linear(4 * 4 * 10, 10, bias=False)
 
@@ -32,9 +32,9 @@ class BorisConvNet(nn.Module):
         return self.fc(x.view(x.size(0), -1))
 
 
-class BorisGraphNet(nn.Module):
+class GraphNet(nn.Module):
     def __init__(self, img_size=28, pred_edge=False):
-        super(BorisGraphNet, self).__init__()
+        super(GraphNet, self).__init__()
         self.pred_edge = pred_edge
         N = img_size ** 2
         self.fc = nn.Linear(N, 10, bias=False)
@@ -171,11 +171,11 @@ def main():
 
     if args.model == 'fc':
         assert not args.pred_edge, "this flag is meant for graphs"
-        model = BorisNet()
+        model = Net()
     elif args.model == 'graph':
-        model = BorisGraphNet(pred_edge=args.pred_edge)
+        model = GraphNet(pred_edge=args.pred_edge)
     elif args.model == 'conv':
-        model = BorisConvNet()
+        model = ConvNet()
     else:
         raise NotImplementedError(args.model)
     model.to(device)
