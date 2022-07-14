@@ -1,0 +1,1 @@
+# https://www.kaggle.com/code/kmader/mnist-graph-nn-with-pooling/notebook

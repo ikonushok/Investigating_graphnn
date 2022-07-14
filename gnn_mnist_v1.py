@@ -123,13 +123,11 @@ def main():
                         help='random seed')
     args = parser.parse_args()
 
-    use_cuda = True
-
     torch.manual_seed(args.seed)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f'device = {device}')
 
-    # device = torch.device("cuda" if use_cuda else "cpu")
-    device = "cpu"
-    kwargs = {'num_workers': 1, 'pin_memory': True} if use_cuda else {}
+    kwargs = {'num_workers': 1, 'pin_memory': True} if device == "cuda" else {}
     train_loader = torch.utils.data.DataLoader(
         datasets.MNIST('../data', train=True, download=True,
                        transform=transforms.Compose([
