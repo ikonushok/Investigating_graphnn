@@ -1,56 +1,77 @@
-# https://github.com/pyg-team/pytorch_geometric/blob/master/examples/mnist_voxel_grid.py
+# https://github.com/pyg-team/pytorch_geometric/blob/master/examples/mnist_nn_conv.py
+# https://github.com/pyg-team/pytorch_geometric/blob/82de9543022d69e5703c17179d77579521ebb43a/examples/mnist_graclus.py
 
 import os.path as osp
 
 import torch
+import torch.nn as nn
 import torch.nn.functional as F
 
-import torch_geometric.transforms as T
+from torch_geometric import transforms as T
 from torch_geometric.datasets import MNISTSuperpixels
 from torch_geometric.loader import DataLoader
-from torch_geometric.nn import SplineConv, max_pool, max_pool_x, voxel_grid
+from torch_geometric.nn import (
+    NNConv, SplineConv,
+    global_mean_pool,
+    graclus,
+    max_pool,
+    max_pool_x,
+)
+from torch_geometric.utils import normalized_cut
 
-path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', 'MNIST')
+path = osp.join(osp.dirname(osp.realpath(__file__)), '../..', 'data', 'MNIST')
 transform = T.Cartesian(cat=False)
 train_dataset = MNISTSuperpixels(path, True, transform=transform)
 test_dataset = MNISTSuperpixels(path, False, transform=transform)
 train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
-test_loader = DataLoader(test_dataset, batch_size=64)
+test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False)
 d = train_dataset
 
 
-class Net(torch.nn.Module):
+def normalized_cut_2d(edge_index, pos):
+    row, col = edge_index
+    edge_attr = torch.norm(pos[row] - pos[col], p=2, dim=1)
+    return normalized_cut(edge_index, edge_attr, num_nodes=pos.size(0))
+
+
+class Net(nn.Module):
     def __init__(self):
         super().__init__()
         self.conv1 = SplineConv(d.num_features, 32, dim=2, kernel_size=5)
         self.conv2 = SplineConv(32, 64, dim=2, kernel_size=5)
-        self.conv3 = SplineConv(64, 64, dim=2, kernel_size=5)
-        self.fc1 = torch.nn.Linear(4 * 64, 128)
+        self.fc1 = torch.nn.Linear(64, 128)
         self.fc2 = torch.nn.Linear(128, d.num_classes)
+        # nn1 = nn.Sequential(nn.Linear(2, 25), nn.ReLU(),
+        #                     nn.Linear(25, d.num_features * 32))
+        # self.conv1 = NNConv(d.num_features, 32, nn1, aggr='mean')
+        #
+        # nn2 = nn.Sequential(nn.Linear(2, 25), nn.ReLU(),
+        #                     nn.Linear(25, 32 * 64))
+        # self.conv2 = NNConv(32, 64, nn2, aggr='mean')
+        #
+        # self.fc1 = torch.nn.Linear(64, 128)
+        # self.fc2 = torch.nn.Linear(128, d.num_classes)
 
     def forward(self, data):
         data.x = F.elu(self.conv1(data.x, data.edge_index, data.edge_attr))
-        cluster = voxel_grid(data.pos, data.batch, size=5, start=0, end=28)
+        weight = normalized_cut_2d(data.edge_index, data.pos)
+        cluster = graclus(data.edge_index, weight, data.x.size(0))
         data.edge_attr = None
         data = max_pool(cluster, data, transform=transform)
 
         data.x = F.elu(self.conv2(data.x, data.edge_index, data.edge_attr))
-        cluster = voxel_grid(data.pos, data.batch, size=7, start=0, end=28)
-        data.edge_attr = None
-        data = max_pool(cluster, data, transform=transform)
+        weight = normalized_cut_2d(data.edge_index, data.pos)
+        cluster = graclus(data.edge_index, weight, data.x.size(0))
+        x, batch = max_pool_x(cluster, data.x, data.batch)
 
-        data.x = F.elu(self.conv3(data.x, data.edge_index, data.edge_attr))
-        cluster = voxel_grid(data.pos, data.batch, size=14, start=0, end=27.99)
-        x, _ = max_pool_x(cluster, data.x, data.batch, size=4)
-
-        x = x.view(-1, self.fc1.weight.size(1))
+        x = global_mean_pool(x, batch)
         x = F.elu(self.fc1(x))
         x = F.dropout(x, training=self.training)
-        x = self.fc2(x)
-        return F.log_softmax(x, dim=1)
+        return F.log_softmax(self.fc2(x), dim=1)
 
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+print(f'device = {device}')
 model = Net().to(device)
 optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
 
@@ -58,11 +79,11 @@ optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
 def train(epoch):
     model.train()
 
-    if epoch == 6:
+    if epoch == 16:
         for param_group in optimizer.param_groups:
             param_group['lr'] = 0.001
 
-    if epoch == 16:
+    if epoch == 26:
         for param_group in optimizer.param_groups:
             param_group['lr'] = 0.0001
 
@@ -84,7 +105,9 @@ def test():
     return correct / len(test_dataset)
 
 
-for epoch in range(1, 21):
+for epoch in range(1, 31):
     train(epoch)
     test_acc = test()
     print(f'Epoch: {epoch:02d}, Test: {test_acc:.4f}')
+
+# Epoch: 30, Test: 0.9569

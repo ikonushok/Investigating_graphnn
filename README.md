@@ -6,6 +6,8 @@
 
 [PyTorch Geometric Temporal](https://github.com/benedekrozemberczki/pytorch_geometric_temporal): Spatiotemporal Signal Processing with Neural Machine Learning Models (CIKM 2021)]
 
+[PyG (PyTorch Geometric)](https://github.com/pyg-team/pytorch_geometric/tree/82de9543022d69e5703c17179d77579521ebb43a/examples)
+
 [Graph Representation Learning](https://github.com/dsgiitr/graph_nets)
 
 [Awesome Graph Classification](https://github.com/benedekrozemberczki/awesome-graph-classification)
