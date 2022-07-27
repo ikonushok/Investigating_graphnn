@@ -1,6 +1,6 @@
-# Ivestigating_graphnn
+# Investigating_graphnn
 
-[Get started wiht igraph in Pethon](https://igraph.org/python/)
+[Get started with igraph in Python](https://igraph.org/python/) 
 
 [JuliaGraphsTutorials](https://github.com/JuliaGraphs/JuliaGraphsTutorials)
 
