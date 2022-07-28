@@ -2,6 +2,8 @@
 # https://medium.com/@BorisAKnyazev/tutorial-on-graph-neural-networks-for-computer-vision-and-beyond-part-1-3d9fada3b80d
 
 import argparse
+import os
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -9,6 +11,10 @@ import torch.optim as optim
 from torchvision import datasets, transforms
 import numpy as np
 from scipy.spatial.distance import cdist
+
+
+if not os.path.isdir('../source_root'):
+    os.mkdir('../source_root')
 
 class GraphNet(nn.Module):
     def __init__(self, image_size=28, pred_edge=False):
@@ -103,23 +109,19 @@ def test(args, model, device, test_loader):
             correct += pred.eq(target.view_as(pred)).sum().item()
     test_loss /= len(test_loader.dataset)
     print(
-        '\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+        'Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
             test_loss, correct, len(test_loader.dataset),
             100. * correct / len(test_loader.dataset)))
 
 
 def main():
     parser = argparse.ArgumentParser(description='GNN PyTorch Example on MNIST')
-    parser.add_argument('--batch_size', type=int, default=64,
-                        help='input batch size')
-    parser.add_argument('--epochs', type=int, default=20,
-                        help='number of epochs to train')
-    parser.add_argument('--lr', type=float, default=1e-3,
-                        help='learning rate')
+    parser.add_argument('--batch_size', type=int, default=64, help='input batch size')
+    parser.add_argument('--epochs', type=int, default=20, help='number of epochs to train')
+    parser.add_argument('--lr', type=float, default=1e-3, help='learning rate')
     parser.add_argument('--pred_edge', action='store_true', default=False,
                         help='predict edges instead of using predefined ones')
-    parser.add_argument('--seed', type=int, default=1,
-                        help='random seed')
+    parser.add_argument('--seed', type=int, default=1, help='random seed')
     args = parser.parse_args()
 
     torch.manual_seed(args.seed)
@@ -128,14 +130,14 @@ def main():
 
     kwargs = {'num_workers': 1, 'pin_memory': True} if device == "cuda" else {}
     train_loader = torch.utils.data.DataLoader(
-        datasets.MNIST('../data', train=True, download=True,
+        datasets.MNIST('../source_root', train=True, download=True,
                        transform=transforms.Compose([
                            transforms.ToTensor(),
                            transforms.Normalize((0.1307,), (0.3081,))
                        ])),
         batch_size=args.batch_size, shuffle=True, **kwargs)
     test_loader = torch.utils.data.DataLoader(
-        datasets.MNIST('../data', train=False, transform=transforms.Compose([
+        datasets.MNIST('../source_root', train=False, transform=transforms.Compose([
             transforms.ToTensor(),
             transforms.Normalize((0.1307,), (0.3081,))
         ])),

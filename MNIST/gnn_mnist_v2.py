@@ -2,6 +2,8 @@
 
 from __future__ import print_function
 import argparse
+import os
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -10,6 +12,8 @@ from torchvision import datasets, transforms
 import numpy as np
 from scipy.spatial.distance import cdist
 
+if not os.path.isdir('../source_root'):
+    os.mkdir('../source_root')
 
 class Net(nn.Module):
     def __init__(self):
@@ -156,14 +160,14 @@ def main():
 
     kwargs = {'num_workers': 1, 'pin_memory': True} if use_cuda else {}
     train_loader = torch.utils.data.DataLoader(
-        datasets.MNIST('../data', train=True, download=True,
+        datasets.MNIST('../source_root', train=True, download=True,
                        transform=transforms.Compose([
                            transforms.ToTensor(),
                            transforms.Normalize((0.1307,), (0.3081,))
                        ])),
         batch_size=args.batch_size, shuffle=True, **kwargs)
     test_loader = torch.utils.data.DataLoader(
-        datasets.MNIST('../data', train=False, transform=transforms.Compose([
+        datasets.MNIST('../source_root', train=False, transform=transforms.Compose([
             transforms.ToTensor(),
             transforms.Normalize((0.1307,), (0.3081,))
         ])),
