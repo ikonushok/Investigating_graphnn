@@ -7,5 +7,5 @@
 
 
 ## Cources
-1. [AMMI Geometric Deep Learning Course](https://geometricdeeplearning.com/lectures/) This course was also delivered, with all materials available, in 2021 [notebooks]()
-2. [Machine Learning with Graphs Stanford]()
+1. [AMMI Geometric Deep Learning Course](https://geometricdeeplearning.com/lectures/) This course was also delivered, with all materials available, in 2021 [notebooks](https://github.com/ikonushok/Investigating_graphnn/tree/main/Books/AMMI%20Geometric%20Deep%20Learning%20Course)
+2. [Machine Learning with Graphs Stanford](https://github.com/ikonushok/Investigating_graphnn/tree/main/Books/Machine%20Learning%20with%20Graphs%20Stanford)
