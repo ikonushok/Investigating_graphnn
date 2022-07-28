@@ -17,7 +17,7 @@ from torch_geometric.nn import (
 )
 from torch_geometric.utils import normalized_cut
 
-path = osp.join(osp.dirname(osp.realpath(__file__)), '../..', 'data', 'MNIST')
+path = osp.join(osp.dirname(osp.realpath(__file__)), '../..', 'source_root', 'MNIST')
 transform = T.Cartesian(cat=False)
 train_dataset = MNISTSuperpixels(path, True, transform=transform)
 test_dataset = MNISTSuperpixels(path, False, transform=transform)

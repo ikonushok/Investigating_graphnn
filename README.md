@@ -1,5 +1,12 @@
 # Investigating_graphnn
+___
+## Разработки моей группы
 
+Рекомендую обратить внимание на [Сверточная нейронная сеть на графах с быстрой локализованной спектральной фильтрацией на основе модели LeNet5](https://github.com/ikonushok/Investigating_graphnn/tree/main/GNNPyTorch)
+
+____
+
+## Прочее
 [Get started with igraph in Python](https://igraph.org/python/) 
 
 [JuliaGraphsTutorials](https://github.com/JuliaGraphs/JuliaGraphsTutorials)
