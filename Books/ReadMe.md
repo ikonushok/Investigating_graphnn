@@ -7,4 +7,5 @@
 
 
 ## Cources
-1. [GDL Course](https://geometricdeeplearning.com/lectures/) This course was also delivered, with all materials available, in 2021
+1. [AMMI Geometric Deep Learning Course](https://geometricdeeplearning.com/lectures/) This course was also delivered, with all materials available, in 2021 [notebooks]()
+2. [Machine Learning with Graphs Stanford]()
