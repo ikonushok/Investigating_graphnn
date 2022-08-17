@@ -1,6 +1,8 @@
 '''
 Adapted from https://github.com/mdeff/cnn_graph/blob/master/lib/graph.py
 '''
+import os
+
 import networkx as nx
 import sklearn.metrics
 import sklearn.neighbors
@@ -9,6 +11,38 @@ import scipy.sparse
 import scipy.sparse.linalg
 import scipy.spatial.distance
 import numpy as np
+from PIL import Image
+import mplfinance as mpf
+
+def create_pattern_imgs(df, pattern_sizes=[20], quality=70, address='../source_root/patterns'):
+    """Create imgs of patterns"""
+
+    if not os.path.isdir(address):
+        os.mkdir(address)
+
+    for pattern_size in pattern_sizes:
+        mpf.plot(df[4:pattern_size+4], type='candle', figsize=(1, 1), axisoff=True,
+                 savefig=f'{address}/pattern{pattern_size}')
+        # plt.show()
+
+        pattern_img = Image.open(f'{address}/pattern{pattern_size}.png')
+        pattern_img = pattern_img.crop((20, 13, 90, 83))  # подобрал вручную
+        pattern_img.save(f'{address}/pattern{pattern_size}.png', quality=quality)
+
+
+def get_pattern_from_img(source) -> np.array:
+    """Open img whitn pattern and translate in to array"""
+
+    pattern_img = Image.open(source)
+    pattern_img = pattern_img.convert('L')
+    pattern = np.array(pattern_img) / 255
+    pattern = np.abs(pattern - 1)  # меняем белый фон на черный - инвертируем паттерн
+    # убираем шум
+    pattern1 = np.where(pattern >= 0.5, pattern, 0)
+    pattern = np.where(pattern1 == 0, pattern1, 1)
+    assert len(np.unique(pattern)) == 2, "Из изображения не убраны шумы"
+    return pattern
+
 
 def grid(m, dtype=np.float32):
     """Return the embedding of a grid graph."""
@@ -315,4 +349,4 @@ def draw_graph(A, m=28, ax=None, spring_layout=False, size_factor=10):
                  node_size=[G.degree(n) * size_factor for n in G.nodes()],
                  ax=ax
                  )
-    return ax
+    return ax, G, pos
